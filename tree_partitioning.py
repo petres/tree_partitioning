@@ -9,6 +9,7 @@ be an exact solution, the algorithm tries to minimize the squared error for a
 given target weight for each of the subtrees."""
 
 
+# how many spaces indent for printing tree
 INDENT = 4
 
 
@@ -73,14 +74,18 @@ class Node(object):
     def is_leaf(self):
         return len(self.children) == 0
 
-    def print_ascii(self, height=0):
-        node_str = " " * (INDENT * height) + "|\n"
-        node_str += (" " * (INDENT * height)) + "-" * INDENT + "+ "
+    def _print_subtree(self, height):
+        indent = ("|" + " " * (INDENT-1)) * height
+        node_str = indent + "|\n" + indent + "-" * INDENT + "+ "
         if self.weight is not None:
             node_str += str(self.weight)
         print(node_str)
         for child in self.children:
-            child.print_ascii(height + 1)
+            child._print_subtree(height + 1)
+
+    def print_subtree(self):
+        """Do not use with too large trees."""
+        self._print_subtree(height=0)
 
     def calc_subtree_weights(self):
         if self.weight is None:  # not a leaf
