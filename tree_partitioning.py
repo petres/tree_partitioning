@@ -50,7 +50,18 @@ class Node(object):
         child.child_order = len(self.children) + 1
         self.children.append(child)
 
+    def nodes_to_root(self):
+        """Return Node objects on the path to the root node."""
+        if self.parent is None:
+            # self is root
+            return []
+        return [self] + self.parent.nodes_to_root()
+
+    def nodes_from_root(self):
+        return reversed(self.nodes_to_root())
+
     def path_to_root(self):
+        """Return list of child_order to root node."""
         if self.parent is None:
             # self is root
             return []
@@ -74,18 +85,26 @@ class Node(object):
     def is_leaf(self):
         return len(self.children) == 0
 
-    def _print_subtree(self, height):
-        indent = ("|" + " " * (INDENT-1)) * height
-        node_str = indent + "|\n" + indent + "-" * INDENT + "+ "
-        if self.weight is not None:
-            node_str += str(self.weight)
-        print(node_str)
-        for child in self.children:
-            child._print_subtree(height + 1)
+    def is_last_child(self):
+        return self.child_order == len(self.parent.children)
 
     def print_subtree(self):
         """Do not use with too large trees."""
-        self._print_subtree(height=0)
+        indent = ""
+        for node in self.nodes_from_root():
+            if node.parent.parent is None or node.parent.is_last_child():
+                indent += " "
+            else:
+                indent += "|"
+            indent += " " * (INDENT-1)
+        node_str = "{}|\n{}{}+".format(indent, indent, "-" * INDENT)
+
+        if self.weight is not None:
+            node_str += str(self.weight)
+        print(node_str)
+
+        for child in self.children:
+            child.print_subtree()
 
     def calc_subtree_weights(self):
         if self.weight is None:  # not a leaf
