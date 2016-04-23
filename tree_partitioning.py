@@ -1,4 +1,8 @@
-"""Implement rooted trees with weights on leaves. Weight of non-leaf vertices
+#!/usr/bin/env python
+"""
+tree_partitioning.py
+
+Implement rooted trees with weights on leaves. Weight of non-leaf vertices
 are defined by the weight of their children.
 
 Our goal is to create an arbitrary rooted tree with positive weighted leaves
@@ -6,7 +10,18 @@ and to partition the tree into equally weighted subtrees, that is a set of
 subtrees such that the leaves of each subtree have approximately equal weight
 and form a partition of all leaves of the original tree. Since there might not
 be an exact solution, the algorithm tries to minimize the squared error for a
-given target weight for each of the subtrees."""
+given target weight for each of the subtrees.
+
+"""
+__author__ = "lumbric"
+__copyright__ = "Copyright 2016, lumbric"
+__license__ = "WTFL"
+__email__ = "lumbric@suuf.cc"
+__status__ = "Prototype"  # actually not even, just a demo
+
+
+# INTENTIALLY LEFT BLANK
+# wow I think this is my first python module from scratch with out libraries :)
 
 
 # how many spaces indent for printing tree
@@ -32,6 +47,9 @@ class Tree(object):
         return [subtree_root] + [node for child in subtree_root.children
                                  for node in self.get_nodes(child)]
 
+    def print_me(self):
+        self.root.print_subtree()
+
 
 class Node(object):
     """Representing one vertex in the tree. Since the vertex knows about its
@@ -47,6 +65,7 @@ class Node(object):
     def add_child(self, child):
         """Modifies child!"""
         child.parent = self
+        # FIXME child_order should start at 0 not at 1
         child.child_order = len(self.children) + 1
         self.children.append(child)
 
@@ -88,8 +107,9 @@ class Node(object):
     def is_last_child(self):
         return self.child_order == len(self.parent.children)
 
-    def print_subtree(self):
+    def print_subtree(self, red_vertices=None):
         """Do not use with too large trees."""
+        # FIXME works only if called on root node... :(
         indent = ""
         for node in self.nodes_from_root():
             if node.parent.parent is None or node.parent.is_last_child():
@@ -164,11 +184,17 @@ class Node(object):
             return weight_error_children, partition_children
 
 
-def generate_random_tree(height, avg_degree):
+def generate_random_tree(height, degree=None, avg_degree=None):
+    if (degree is None) == (avg_degree is None):
+        raise ValueError("must provide either degree or avg_degree")
     weight = None if height > 1 else 1.  # only leaves get weight
     root = Node(weight)
     if height > 1:
-        for i in range(avg_degree):
-            root.add_child(generate_random_tree(height - 1, avg_degree).root)
+        _degree = degree if degree is not None else avg_degree
+        for i in range(_degree):
+            subtree = generate_random_tree(height=height-1,
+                                           avg_degree=avg_degree,
+                                           degree=degree)
+            root.add_child(subtree.root)
 
     return Tree(root)
