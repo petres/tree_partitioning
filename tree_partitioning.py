@@ -187,9 +187,12 @@ class Node(object):
 def generate_random_tree(height, degree=None, avg_degree=None):
     if (degree is None) == (avg_degree is None):
         raise ValueError("must provide either degree or avg_degree")
+    # TODO random weights
     weight = None if height > 1 else 1.  # only leaves get weight
     root = Node(weight)
     if height > 1:
+        # TODO avg_degree needs also some sigma and to be random. and to be
+        # random...
         _degree = degree if degree is not None else avg_degree
         for i in range(_degree):
             subtree = generate_random_tree(height=height-1,
