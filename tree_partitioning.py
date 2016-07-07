@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+ #!/usr/bin/env python
 """
 tree_partitioning.py
 
@@ -32,31 +32,13 @@ def norm(value):
     return value**2
 
 
-class Tree(object):
-    """This is quite a useless container class. Turned out that working only
-    with nodes is easier."""
-
-    def __init__(self, root):
-        self.root = root
-
-    def get_nodes(self, subtree_root=None):
-        """Get all nodes from subtree with root ``subtree_root`` or all nodes
-        if ``subtree_root`` not given."""
-        if subtree_root is None:
-            subtree_root = self.root
-        return [subtree_root] + [node for child in subtree_root.children
-                                 for node in self.get_nodes(child)]
-
-    def print_me(self):
-        self.root.print_subtree()
-
-
 class Node(object):
     """Representing one vertex in the tree. Since the vertex knows about its
     children, objects of this type can be used to represent the whole
     subtree."""
 
-    def __init__(self, weight=None):
+    def __init__(self, name, weight=None):
+        self.name = name
         self.weight = weight
         self.children = []
         self.parent = None
@@ -65,8 +47,7 @@ class Node(object):
     def add_child(self, child):
         """Modifies child!"""
         child.parent = self
-        # FIXME child_order should start at 0 not at 1
-        child.child_order = len(self.children) + 1
+        child.child_order = len(self.children)
         self.children.append(child)
 
     def nodes_to_root(self):
@@ -98,8 +79,9 @@ class Node(object):
 
     def __str__(self):
         path_from_root_str = ["root"]
+        #path_from_root_str += [str(order) for order in self.path_from_root()]
         path_from_root_str += [str(order) for order in self.path_from_root()]
-        return "[{}]".format(" -> ".join(path_from_root_str))
+        return "[{}] {}".format(" -> ".join(path_from_root_str), self.name)
 
     def is_leaf(self):
         return len(self.children) == 0
@@ -107,7 +89,7 @@ class Node(object):
     def is_last_child(self):
         return self.child_order == len(self.parent.children)
 
-    def print_subtree(self, red_vertices=None):
+    def print_subtree(self):
         """Do not use with too large trees."""
         # FIXME works only if called on root node... :(
         indent = ""
@@ -200,4 +182,36 @@ def generate_random_tree(height, degree=None, avg_degree=None):
                                            degree=degree)
             root.add_child(subtree.root)
 
-    return Tree(root)
+    return root
+
+
+
+
+
+# root = Node()
+# root.add_child(Node(10))
+# root.add_child(Node(10))
+# root.add_child(Node(100))
+
+# n1 = Node()
+# root.add_child(n1)
+
+# n1.add_child(Node(50))
+# n1.add_child(Node(50))
+
+
+# n2 = Node()
+# root.add_child(n2)
+
+# n2.add_child(Node(300))
+# n2.add_child(Node(300))
+
+# root.calc_subtree_weights()
+# root.print_subtree()
+
+# def print_partition(weight_error, subtrees):
+#     print("weight_error = ", weight_error)
+#     print("\npartiton:")
+#     print("\n".join(str(subtree) for subtree in subtrees))
+
+# print_partition(*root.find_partition(target_weight=300))
