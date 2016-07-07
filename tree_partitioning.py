@@ -81,8 +81,8 @@ class Node(object):
         path_from_root_str = ["root"]
         #path_from_root_str += [str(order) for order in self.path_from_root()]
         path_from_root_str += [str(order) for order in self.path_from_root()]
-        return "[{}] {}".format(" -> ".join(path_from_root_str), self.name)
-
+        return "[{}] Name: {}, Weight: {}".format(" -> ".join(path_from_root_str), self.name, self.weight)
+    
     def is_leaf(self):
         return len(self.children) == 0
 
